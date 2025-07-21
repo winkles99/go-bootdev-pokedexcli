@@ -32,7 +32,7 @@ func commandCatch(cfg *replConfig, opts []string) error {
 		cfg.Cache.Add(url, pokemon)
 	}
 
-	fmt.Println("Throwing a Pokeball at pikachu...")
+	fmt.Printf("Throwing a Pokeball at %s...\n", pokemonName)
 	chance := rand.Intn(30)
 	if chance < 10 {
 		fmt.Printf("%s escaped!\n", pokemonName)
@@ -40,7 +40,7 @@ func commandCatch(cfg *replConfig, opts []string) error {
 	}
 
 	cfg.Pokedex[pokemonName] = pokemon
-	fmt.Println("pikachu was caught!")
+	fmt.Printf("%s was caught!\n", pokemonName)
 	fmt.Println("You may now inspect it with the inspect command.")
 	return nil
 }
