@@ -4,56 +4,85 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
+	"net/http"
 )
 
-// Struct for a single location area
-type LocationArea struct {
+type namedUrl struct {
 	Name string `json:"name"`
-	URL  string `json:"url"`
+	Url  string `json:"url"`
 }
 
-// Struct for the API response
-type LocationAreaResponse struct {
-	Results  []LocationArea `json:"results"`
-	Next     string         `json:"next"`
-	Previous string         `json:"previous"`
+type LocationAreasResp struct {
+	Count    int     `json:"count"`
+	Next     *string `json:"next"`
+	Previous *string `json:"previous"`
+	Results  []namedUrl  `json:"results"`
 }
 
-// GetLocationAreas fetches paginated location areas
-func (c *Client) GetLocationAreas(pageURL string) (LocationAreaResponse, error) {
-	if pageURL == "" {
-		pageURL = "https://pokeapi.co/api/v2/location-area/?offset=0&limit=20"
-	}
-
-	resp, err := c.httpClient.Get(pageURL)
-	if err != nil {
-		return LocationAreaResponse{}, fmt.Errorf("failed to GET location areas: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return LocationAreaResponse{}, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	var locationResp LocationAreaResponse
-	err = json.Unmarshal(body, &locationResp)
-	if err != nil {
-		return LocationAreaResponse{}, fmt.Errorf("failed to unmarshal JSON: %w", err)
-	}
-
-	// ✅ Fix: enforce HTTPS only after locationResp is populated
-	locationResp.Next = enforceHTTPS(locationResp.Next)
-	locationResp.Previous = enforceHTTPS(locationResp.Previous)
-
-	return locationResp, nil
+type LocationResp struct {
+		PokemonEncounters []struct {
+			Pokemon namedUrl `json:"pokemon"`
+		} `json:"pokemon_encounters"`
 }
 
-// Small helper function
-func enforceHTTPS(url string) string {
-	if strings.HasPrefix(url, "http://") {
-		return strings.Replace(url, "http://", "https://", 1)
+func (c *Client) GetLocationAreas(url string) (LocationAreasResp, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return LocationAreasResp{}, err
 	}
-	return url
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return LocationAreasResp{}, err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode > 299 {
+		return LocationAreasResp{}, fmt.Errorf("Response failed with status code: %d and\n", res.StatusCode)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return LocationAreasResp{}, err
+	}
+
+	areas := LocationAreasResp{}
+	err = json.Unmarshal(body, &areas)
+
+	if err != nil {
+		return LocationAreasResp{}, fmt.Errorf("bad response JSON")
+	}
+	return areas, nil
+}
+
+func (c *Client) GetLocationArea(url string) (LocationResp, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return LocationResp{}, err
+	}
+
+	res, err := c.httpClient.Do(req)
+	if err != nil {
+		return LocationResp{}, err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode > 299 {
+		return LocationResp{}, fmt.Errorf("Response failed with status code: %d and\n", res.StatusCode)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return LocationResp{}, err
+	}
+
+	area := LocationResp{}
+	err = json.Unmarshal(body, &area)
+
+	if err != nil {
+		return LocationResp{}, fmt.Errorf("bad response JSON")
+	}
+	return area, nil
 }

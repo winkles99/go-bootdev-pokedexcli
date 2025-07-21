@@ -3,8 +3,8 @@ package repl
 import (
 	"fmt"
 
-	"github.com/samvimes01/go-bootdev-pokedexcli/internal/pokeapi"
-	"github.com/samvimes01/go-bootdev-pokedexcli/utils"
+	"github.com/winkles99/go-bootdev-pokedexcli/internal/pokeapi"
+	"github.com/winkles99/go-bootdev-pokedexcli/utils"
 )
 
 type area struct {

@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/samvimes01/go-bootdev-pokedexcli/pokedex"
+	"github.com/winkles99/go-bootdev-pokedexcli/pokedex"
 )
 
 func (c *Client) GetPokemon(url string) (pokedex.Pokemon, error) {
