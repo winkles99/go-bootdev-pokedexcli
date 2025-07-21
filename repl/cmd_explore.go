@@ -3,7 +3,7 @@ package repl
 import (
 	"fmt"
 
-	"github.com/samvimes01/go-bootdev-pokedexcli/internal/pokeapi"
+	"github.com/winkles99/go-bootdev-pokedexcli/internal/pokeapi"
 )
 
 func commandExplore(cfg *replConfig, opts []string) error {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/samvimes01/go-bootdev-pokedexcli/pokedex"
+	"github.com/winkles99/go-bootdev-pokedexcli/pokedex"
 )
 
 func commandCatch(cfg *replConfig, opts []string) error {
